@@ -1,11 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
+const { query } = require('express');
 
 // const db = require("db");
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 app.use(bodyParser.urlencoded({extended:false}));
 
@@ -41,7 +42,7 @@ app.post('/loginadmin/:admin&:password', (req, res) => {
                 console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 
@@ -60,7 +61,7 @@ app.get('/getallfood', (req, res) => {
                 console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // get food
@@ -84,7 +85,7 @@ app.post('/addfood', (req, res) => {
                 console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // update food
@@ -101,7 +102,7 @@ app.put('/updatefood/:id', (req, res) => {
                 console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // delete food
@@ -113,10 +114,10 @@ app.delete('/deletefood/:id', (req, res) => {
             if(!err){
                 res.send('Food has been deleted !');
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 
@@ -140,7 +141,7 @@ app.get('/getallorderfood', (req, res) => {
                 console.log(err);
             }
         });
-        console.release();
+        connection.release();
 
     });
 });
@@ -158,7 +159,7 @@ function getUserById($idUser) {
             console.log(err);
         }
     });
-    console.release();
+    connection.release();
 }
 
 function queryFood($foodID) {
@@ -174,7 +175,7 @@ function getFoodById($idFood) {
             console.log(err);
         }
     });
-    console.release();
+    connection.release();
 }
 
 function queryPayment($paymentID) {
@@ -184,39 +185,38 @@ function queryPayment($paymentID) {
 
 function getPaymentById($idPayment) {
     connection.query('SELECT * from paymentmethods WHERE id = ?',[req.params.id], (err, rows) => {
-        connection.release();
         if(!err){
             res.send(rows);
         }else{
             connection.log(err);
         }
     });
-    console.release();
+    connection.release();
 }
 
-// function convertOrderFoodObj($user, $payment, $food, $total, $status) {
-//     $objOrderFood = {
-//         $user = {
-//             id: $user.id,
-//             email: $user.email,
-//             name: $user.name,
-//             phone:$user.phone,
-//             address:$$user.address,
-//         },
-//         $payment = {
-//             id: $payment.id,
-//             name: $payment.name,
-//         },
-//         $food = {
-//             id: $food.id,
-//             name: $food.name,
-//             price: $food.price,
-//         },
-//         $total,
-//         $status,
-//     };
-//     return $objOrderFood;
-// };
+function convertOrderFoodObj($user, $payment, $food, $total, $status) {
+    $objOrderFood = {
+        user : {
+            id: $user.id,
+            email: $user.email,
+            name: $user.name,
+            phone:$user.phone,
+            address:$user.address
+        },
+        payment :{
+            id: $payment.id,
+            name: $payment.name
+        },
+        food : {
+            id: $food.id,
+            name: $food.name,
+            price: $food.price
+        },
+        total: $total,
+        status: $status
+    };
+    return $objOrderFood;
+};
 
 // get orderfood
 app.get('/getorderfood/:id', (req, res) => { 
@@ -228,10 +228,10 @@ app.get('/getorderfood/:id', (req, res) => {
             if(!err){
                 res.send(rows);
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // add orderfood
@@ -244,10 +244,10 @@ app.post('/addorderfood', (req, res) => {
             if(!err){
                 res.send('New order food has been added');
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // update orderfood
@@ -261,10 +261,10 @@ app.put('/updateorderfood/:id', (req, res) => {
             if(!err){
                 res.send('Order food has been updated!');
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // delete voucher
@@ -276,29 +276,28 @@ app.delete('/deleteorderfood/:id', (req, res) => {
             if(!err){
                 res.send('Order food has been deleted !');
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
-
-
 ///////////////////////    PAYMENT METHODS    //////////////////////
 
-// get all payment methods
+
+// get all  methods
 app.get('/getallpayment', (req, res) => { 
     pool.getConnection((err, connection) => {
-        if(err) throw err
+        if(err) throw err;
         console.log('connected as id', connection.threadId);
         connection.query('SELECT * from paymentmethods', (err, rows) => {
             if(!err){
                 res.send(rows);
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // get payment methods
@@ -319,10 +318,10 @@ app.post('/addpayment', (req, res) => {
             if(!err){
                 res.send('New payment method has been added');
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // update payment methods
@@ -335,10 +334,10 @@ app.put('/updatepayment/:id', (req, res) => {
             if(!err){
                 res.send('Payment method has been updated!')
             }else{
-                connection.log(err)
+                console.log(err)
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // delete payment methods
@@ -350,10 +349,10 @@ app.delete('/deletepayment/:id', (req, res) => {
             if(!err){
                 res.send('Payment method has been deleted !');
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 
@@ -369,10 +368,10 @@ app.get('/getallrating', (req, res) => {
             if(!err){
                 res.send(rows);
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // get rating by idfood
@@ -385,10 +384,10 @@ app.get('/getrating/:id', (req, res) => {
             if(!err){
                 res.send(rows);
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // add rating
@@ -401,10 +400,10 @@ app.post('/addrating', (req, res) => {
             if(!err){
                 res.send('New rating has been added');
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 
@@ -419,10 +418,10 @@ app.get('/getalltypefood', (req, res) => {
             if(!err){
                 res.send(rows);
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // get type
@@ -434,10 +433,10 @@ app.get('/gettypefood/:id', (req, res) => {
             if(!err){
                 res.send(rows);
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // add type
@@ -450,10 +449,10 @@ app.post('/addtypefood', (req, res) => {
             if(!err){
                 res.send('New type has been added');
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // update type
@@ -466,7 +465,7 @@ app.put('/updatetypefood/:id', (req, res) => {
             if(!err){
                 res.send('Type has been updated!');
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
         connection.release();
@@ -481,10 +480,10 @@ app.delete('/deletetypefood/:id', (req, res) => {
             if(!err){
                 res.send('Type has been deleted !');
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 
@@ -502,10 +501,10 @@ app.get('/getalluser', (req, res) => {
             if(!err){
                 res.send(rows);
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // get user
@@ -526,10 +525,10 @@ app.post('/adduser', (req, res) => {
             if(!err){
                 res.send('New user has been added');
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // update thông tin cá nhân
@@ -542,10 +541,10 @@ app.put('/updateuser/info/:id', (req, res) => {
             if(!err){
                 res.send('Information of user has been updated!');
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 // update hình ảnh cá nhân
@@ -558,10 +557,10 @@ app.put('/updateuser/img/:id', (req, res) => {
             if(!err){
                 res.send('Image of user has been updated!');
             }else{
-                connection.log(err);
+                console.log(err);
             }
         });
-        console.release();
+        connection.release();
     });
 });
 
