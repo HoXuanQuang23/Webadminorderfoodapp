@@ -14,14 +14,8 @@ app.listen(port, () => console.log("Listen on port", port));
 
 /////////////////    ADMIN    ///////////////////
 app.post('/loginadmin/:admin&:password', (req, res) => {
-    db.getAdmin(req.params.id, req.params.password, function (err, rows) {
+    db.getAdmin(req.params.admin, req.params.password, function (err, rows) {
         res.send(rows);
-        if(res != null){
-            res.send("Admin Login Success!!!");      
-        }
-        else{
-            res.send("Admin Login Fail!!!");
-        }
     });
 });
 
@@ -36,6 +30,12 @@ app.get("/getallfood", (req, res) => {
 // get food by id
 app.post("/getfood/:id", (req, res) => {
   db.getFoodById(req.params.id, function (err, rows) {
+    res.send(rows);
+  });
+});
+// get food by idType
+app.post("/getfood/type/:idtype", (req, res) => {
+  db.getFoodByIdType(req.params.idtype, function (err, rows) {
     res.send(rows);
   });
 });
@@ -120,8 +120,8 @@ app.get('/getallrating', (req, res) => {
       });
 });
 // // get rating by idfood
-app.get('/getrating/:id', (req, res) => {
-    db.addRating(req.params.id, function (err, rows) {
+app.post('/getrating/:idfood', (req, res) => {
+    db.getRatingByIdFood(req.params.idfood, function (err, rows) {
         res.send(rows);
       });
 });
@@ -173,15 +173,22 @@ app.get("/getalluser", (req, res) => {
     res.send(rows);
   });
 });
-// // get user
-app.post('/getuser/:id', (req, res) => {
-    db.getUserById(req.params.id, function (err, rows) {
+// // get user by email and password
+app.post('/getuser/:email&:password', (req, res) => {
+    db.getUserByEmail(req.params.email,req.params.password, function (err, rows) {
         res.send(rows);
       });
 });
+
+// get user by email
+app.post('/getuserbyid/:id', (req, res) => {
+  db.getUserByIdUser(req.params.id, function (err, rows) {
+      res.send(rows);
+    });
+});
 // // add user
 app.post('/adduser', (req, res) => {
-    db.getUserById(req.body, function (err, rows) {
+    db.addUser(req.body, function (err, rows) {
         res.send(rows);
       });
 });
@@ -261,7 +268,7 @@ app.get('/getallvoucher', (req, res) => {
 //         console.log('connected as id', connection.threadId)
 
 //         connection.query('DELETE from vouchers WHERE id = ?',[req.params.id], (err, rows) => {
-//             connection.release();
+//             connection.release();  
 //             if(!err){
 //                 res.send('Voucher has been deleted !')
 //             }else{
