@@ -14,14 +14,8 @@ app.listen(port, () => console.log("Listen on port", port));
 
 /////////////////    ADMIN    ///////////////////
 app.post('/loginadmin/:admin&:password', (req, res) => {
-    db.getAdmin(req.params.id, req.params.password, function (err, rows) {
+    db.getAdmin(req.params.admin, req.params.password, function (err, rows) {
         res.send(rows);
-        if(res != null){
-            res.send("Admin Login Success!!!");      
-        }
-        else{
-            res.send("Admin Login Fail!!!");
-        }
     });
 });
 
@@ -36,6 +30,12 @@ app.get("/getallfood", (req, res) => {
 // get food by id
 app.post("/getfood/:id", (req, res) => {
   db.getFoodById(req.params.id, function (err, rows) {
+    res.send(rows);
+  });
+});
+// get food by idType
+app.post("/getfood/type/:idtype", (req, res) => {
+  db.getFoodByIdType(req.params.idtype, function (err, rows) {
     res.send(rows);
   });
 });
@@ -67,10 +67,21 @@ app.get("/getallorderfood", (req, res) => {
       });
 });
 // // get orderfood by iduser
-app.post('/getorderfood/:id', (req, res) => {
-    db.getOrderFood(req.params.id, function (err, rows) {
+app.post('/getorderfood/:iduser', (req, res) => {
+    db.getOrderFood(req.params.iduser, function (err, rows) {
         res.send(rows);
       });
+});
+// // get orderfood by id
+app.post('/getorderfood/order/:id', (req, res) => {
+  db.getOrderFoodByID(req.params.id, function (err, rows) {
+      res.send(rows);
+    });
+});
+app.post('/getorderfood/namefood/:id', (req, res) => {
+  db.getOrderFoodByNameID(req.params.id, function (err, rows) {
+      res.send(rows);
+    });
 });
 // // add orderfood
 app.post('/addorderfood', (req, res) => {
@@ -120,8 +131,8 @@ app.get('/getallrating', (req, res) => {
       });
 });
 // // get rating by idfood
-app.get('/getrating/:id', (req, res) => {
-    db.addRating(req.params.id, function (err, rows) {
+app.post('/getrating/:idfood', (req, res) => {
+    db.getRatingByIdFood(req.params.idfood, function (err, rows) {
         res.send(rows);
       });
 });
@@ -173,15 +184,22 @@ app.get("/getalluser", (req, res) => {
     res.send(rows);
   });
 });
-// // get user
-app.post('/getuser/:id', (req, res) => {
-    db.getUserById(req.params.id, function (err, rows) {
+// // get user by email and password
+app.post('/getuser/:email&:password', (req, res) => {
+    db.getUserByEmail(req.params.email,req.params.password, function (err, rows) {
         res.send(rows);
       });
 });
+
+app.post('/getuseremail/:email', (req, res) => {
+  db.getUserByEmailUser(req.params.email, function (err, rows) {
+      res.send(rows);
+    });
+});
+
 // // add user
 app.post('/adduser', (req, res) => {
-    db.getUserById(req.body, function (err, rows) {
+    db.addUser(req.body, function (err, rows) {
         res.send(rows);
       });
 });
@@ -201,11 +219,11 @@ app.put('/updateuser/img/:id', (req, res) => {
 ///////////////     VOUCHERS     ////////////////
 
 // // get all vouchers
-app.get('/getallvoucher', (req, res) => {
-    db.getAllVoucher(function (err, rows) {
-        res.send(rows);
-      });
-});
+// app.get('/getallvoucher', (req, res) => {
+//     db.getAllVoucher(function (err, rows) {
+//         res.send(rows);
+//       });
+// });
 // // get voucher
 // app.get('/getvoucher/:id', (req, res) => {
 //     pool.getConnection((err, connection) => {
@@ -261,7 +279,7 @@ app.get('/getallvoucher', (req, res) => {
 //         console.log('connected as id', connection.threadId)
 
 //         connection.query('DELETE from vouchers WHERE id = ?',[req.params.id], (err, rows) => {
-//             connection.release();
+//             connection.release();  
 //             if(!err){
 //                 res.send('Voucher has been deleted !')
 //             }else{

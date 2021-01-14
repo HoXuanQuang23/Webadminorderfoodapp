@@ -9,11 +9,12 @@ const pool = mysql.createPool({
 });
 
 module.exports = {
-    getAdmin: function($userName, $password, callback) {
+    getAdmin: function($admin, $password, callback) {
         pool.getConnection((err, connection) => {
             if (err) throw err;
-            $query = 'select * from admin where admin='+ $userName + 'and password=' + $password;
-            connection.query($query, callback);
+            var queryString = "SELECT * from admin WHERE admin = " + $admin + "and password = " + $password
+            connection.query(queryString, callback);
+            // connection.query($query, callback);
             connection.release();
         });
     },
@@ -28,6 +29,13 @@ module.exports = {
         pool.getConnection((err, connection) => {
             if (err) throw err;
             connection.query('SELECT * from foods WHERE id = ?', $idFood, callback);
+            connection.release();
+        });
+    },
+    getFoodByIdType: function($idType, callback) {
+        pool.getConnection((err, connection) => {
+            if (err) throw err;
+            connection.query('SELECT * from foods WHERE idtype = ?', $idType, callback);
             connection.release();
         });
     },
@@ -62,7 +70,21 @@ module.exports = {
     getOrderFood: function($idUser, callback) {
         pool.getConnection((err, connection) => {
             if(err) throw err;
-            connection.query('SELECT * from orderfoods WHERE iduser = ?', $idUser, callback);
+            connection.query('SELECT id, iduser, idpayment,  name, address, phone, date, SUM(total) AS "total", status FROM orderfoods WHERE iduser = ? GROUP BY id', $idUser, callback);
+            connection.release();
+        });
+    },
+    getOrderFoodByID: function($id, callback) {
+        pool.getConnection((err, connection) => {
+            if(err) throw err;
+            connection.query('SELECT * from orderfoods WHERE id = ?', $id, callback);
+            connection.release();
+        });
+    },
+    getOrderFoodByNameID: function($id, callback) {
+        pool.getConnection((err, connection) => {
+            if(err) throw err;
+            connection.query('SELECT id, iduser, idfood, total, quantity, name, phone, address, namefood, status from orderfoods WHERE id = ?', $id, callback);
             connection.release();
         });
     },
@@ -150,10 +172,20 @@ module.exports = {
             connection.release();
         });
     },
-    getUserById: function($idUser, callback) {
+    getUserByEmail: function($emailUser,$passwordUser, callback) {
         pool.getConnection((err, connection) => { 
             if (err) throw err;
-            connection.query('SELECT * FROM users WHERE id = ?',$idUser, callback);
+            var queryString = "SELECT * from users WHERE email = " + $emailUser + "and password = " + $passwordUser
+            connection.query(queryString, callback);
+            connection.release();
+        });
+    },
+    getUserByEmailUser: function($emailUser, callback) {
+        pool.getConnection((err, connection) => { 
+            if (err) throw err;
+            var queryString = "SELECT * from users WHERE email = " + $emailUser 
+            // connection.query('SELECT * from users WHERE id = ?', $idUser , callback);
+            connection.query(queryString, callback);
             connection.release();
         });
     },
@@ -194,7 +226,7 @@ module.exports = {
     getRatingByIdFood: function($idFood, callback) {
         pool.getConnection((err, connection) => {
             if(err) throw err;
-            connection.query('SELECT * from ratings WHERE idfood = ?', $idFood, callback);
+            connection.query('SELECT rate from ratings WHERE idfood = ?', $idFood, callback);
             connection.release();
         });
     },
