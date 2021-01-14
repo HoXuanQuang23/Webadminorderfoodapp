@@ -180,21 +180,12 @@ module.exports = {
             connection.release();
         });
     },
-<<<<<<< HEAD
     getUserByEmailUser: function($emailUser, callback) {
         pool.getConnection((err, connection) => { 
             if (err) throw err;
             var queryString = "SELECT * from users WHERE email = " + $emailUser 
             // connection.query('SELECT * from users WHERE id = ?', $idUser , callback);
             connection.query(queryString, callback);
-=======
-    getUserByIdUser: function($idUser, callback) {
-        pool.getConnection((err, connection) => { 
-            if (err) throw err;
-            // var queryString = "SELECT * from users WHERE email = " + $emailUser 
-            connection.query('SELECT * from users WHERE id = ?', $idUser , callback);
-            // connection.query(queryString, callback);
->>>>>>> 4c861d120c05dbdd54362f12926cd1ae9ee6cc83
             connection.release();
         });
     },
