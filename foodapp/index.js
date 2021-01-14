@@ -191,12 +191,21 @@ app.post('/getuser/:email&:password', (req, res) => {
       });
 });
 
+<<<<<<< HEAD
 app.post('/getuseremail/:email', (req, res) => {
   db.getUserByEmailUser(req.params.email, function (err, rows) {
       res.send(rows);
     });
 });
 
+=======
+// get user by email
+app.post('/getuserbyid/:id', (req, res) => {
+  db.getUserByIdUser(req.params.id, function (err, rows) {
+      res.send(rows);
+    });
+});
+>>>>>>> 4c861d120c05dbdd54362f12926cd1ae9ee6cc83
 // // add user
 app.post('/adduser', (req, res) => {
     db.addUser(req.body, function (err, rows) {
